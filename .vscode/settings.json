@@ -11,7 +11,8 @@
     "**/package-lock.json": true,
     "**/tsconfig.json": true,
     "**/.prettierrc": true,
-    "**/src/.env": true
+    "**/src/.env": true,
+    "**.gitignore": true
   },
   "javascript.preferences.importModuleSpecifierEnding": "js",
   "cSpell.words": ["virtuals"]

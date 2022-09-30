@@ -1,6 +1,6 @@
 import {
   Product,
-  productFiles,
+  productFields,
   validateProductData,
   productNumericFields,
 } from "../models/product.model.js";
@@ -14,13 +14,13 @@ import {
 
 export const updateProduct = updateOne(
   Product,
-  productFiles,
+  productFields,
   validateProductData
 );
 
 export const createProduct = createOne(
   Product,
-  productFiles,
+  productFields,
   validateProductData
 );
 

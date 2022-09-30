@@ -63,10 +63,10 @@ export const updateOne = (Model, fields, validate) => {
   });
 };
 
-export const getOne = (Model, popOptions) =>
+export const getOne = (Model, populateOptions) =>
   catchAsync(async (req, res, next) => {
     let query = Model.findById(req.params.id);
-    if (popOptions) query = query.populate(popOptions);
+    if (populateOptions) query = query.populate(populateOptions);
     const doc = await query;
 
     if (!doc) {

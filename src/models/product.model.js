@@ -70,7 +70,7 @@ function validateProductData(data) {
 
 const Product = new mongoose.model("Product", productSchema);
 
-const productFiles = [
+const productFields = [
   "tags",
   "name",
   "brand",
@@ -89,4 +89,4 @@ const productNumericFields = [
   "number_of_review",
 ];
 
-export { Product, validateProductData, productFiles, productNumericFields };
+export { Product, validateProductData, productFields, productNumericFields };

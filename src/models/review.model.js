@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import Joi from "joi";
+import joiErrorHandler from "../errors/joiErrorHandler.js";
+import { Product } from "./product.model.js";
 
 const reviewSchema = mongoose.Schema(
   {
@@ -15,9 +17,72 @@ const reviewSchema = mongoose.Schema(
   }
 );
 
+reviewSchema.index({ productID: 1, userID: 1 }, { unique: true });
+
+reviewSchema.pre(/^find/, function (next) {
+  // this.populate({
+  //   path: 'tour',
+  //   select: 'name'
+  // }).populate({
+  //   path: 'user',
+  //   select: 'name photo'
+  // });
+
+  this.populate({
+    path: "userID",
+    select: "username ",
+  });
+  next();
+});
+
+// reviewSchema.statics.calcAverageRatings = async function (productID) {
+//   const stats = await this.aggregate([
+//     {
+//       $match: { productID: productID },
+//     },
+//     {
+//       group: {
+//         _id: "productID",
+//         nRating: { $sum: 1 },
+//         avgRating: { $avg: "rating" },
+//       },
+//     },
+//   ]);
+
+//   console.log(stats);
+// };
+
+// reviewSchema.post("save", function () {
+//   this.constructor.calcAverageRatings(this.productID);
+// });
+
+// findByIdAndUpdate
+// findByIdAndDelete
+// reviewSchema.pre(/^findOneAnd/, async function (next) {
+//   this.r = await this.findOne();
+//   // console.log(this.r);
+//   next();
+// });
+
+// reviewSchema.post(/^findOneAnd/, async function () {
+//   // await this.findOne(); does NOT work here, query has already executed
+//   await this.r.constructor.calcAverageRatings(this.r.productID);
+// });
+
 const joiReviewSchema = Joi.object({
   rating: Joi.number().min(0).max(5).required(),
   review: Joi.string().min(3).max(2048).required(),
-  userID: Joi.string().hex().length(24),
-  productID: Joi.string().hex().length(24),
+  userID: Joi.string().hex().length(24).required(),
+  productID: Joi.string().hex().length(24).required(),
 });
+
+function validateReviewData(data) {
+  return joiErrorHandler(data, joiReviewSchema);
+}
+
+const Review = new mongoose.model("Review", reviewSchema);
+
+const reviewNumericFields = ["rating"];
+const reviewFields = ["rating", "review", "userID", "productID"];
+
+export { validateReviewData, Review, reviewNumericFields, reviewFields };
