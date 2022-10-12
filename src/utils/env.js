@@ -6,6 +6,6 @@ export const MONGODB_STR =
 
 export const JWT_SECRET =
   "U2FsdGVkX19kFMdVHB7ay+KiAHPSE5KwdRbLlwmKFO+te4Sg48fbWZcejS9YAH3c";
-export const JWT_EXPIRES_IN = 7;
+export const JWT_EXPIRES_IN = 7 * 24 * 60 * 1000;
 export const JWT_COOKIE_EXPIRES_IN = 7;
 export const NODE_ENV = "development";

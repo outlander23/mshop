@@ -2,6 +2,7 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 import connectToMongoDB from "./db/connectToDB.js";
+
 await connectToMongoDB();
 
 import app from "./app.js";

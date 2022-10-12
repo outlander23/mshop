@@ -9,6 +9,7 @@ import {
   createOne,
   deleteOne,
   getAll,
+  getOne,
   updateOne,
 } from "../utils/handleFactory.js";
 
@@ -23,6 +24,8 @@ export const createProduct = createOne(
   productFields,
   validateProductData
 );
+
+export const getProduct = getOne(Product);
 
 export const deleteProduct = deleteOne(Product);
 export const getAllProduct = getAll(Product, productNumericFields);

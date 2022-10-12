@@ -6,28 +6,39 @@ const productSchema = mongoose.Schema({
   name: {
     type: String,
     required: true,
-    unique: true,
   },
   price: {
     type: Number,
+    required: true,
+  },
+  photo: {
+    type: String,
     required: true,
   },
   brand: {
     type: String,
     required: true,
   },
+  imgs: [
+    {
+      type: String,
+      required: true,
+    },
+  ],
+  description: [
+    {
+      type: String,
+      required: true,
+    },
+  ],
+  discount: {
+    type: Number,
+    default: 0,
+  },
   quantity: {
     type: Number,
     default: 0,
     min: 0,
-  },
-  short_description: {
-    type: String,
-    required: true,
-  },
-  discount: {
-    type: Number,
-    default: 0,
   },
   number_of_review: {
     type: Number,
@@ -37,31 +48,32 @@ const productSchema = mongoose.Schema({
     type: Number,
     default: 0,
   },
-  // imgs: [
-  //   {
-  //     type: String,
-  //     required: true,
-  //   },
-  // ],
-  tags: [
-    {
-      type: String,
-      required: true,
-    },
-  ],
 });
 
 const joiProductSchema = Joi.object({
   name: Joi.string().min(5).max(120).required(),
   brand: Joi.string()
     .required()
-    .valid("apple", "samsung", "xiaomi", "oppo", "realme", "huawei", "others"),
+    .valid(
+      "apple",
+      "samsung",
+      "xiaomi",
+      "oppo",
+      "realme",
+      "huawei",
+      "symphony",
+      "nothing",
+      "motorola",
+      "walton",
+      "nokia",
+      "umidigi",
+      "others"
+    ),
+  photo: Joi.string().max(1024).required(),
   price: Joi.number().required().min(0).max(10000000000),
   quantity: Joi.number().optional(),
-  number_of_review: Joi.number().optional(),
-  short_description: Joi.string().min(10).max(2024).required(),
+  description: Joi.array().items(Joi.string().required()),
   discount: Joi.number().max(100).optional(),
-  tags: Joi.array().items(Joi.string()).required(),
 });
 
 function validateProductData(data) {
@@ -71,14 +83,13 @@ function validateProductData(data) {
 const Product = new mongoose.model("Product", productSchema);
 
 const productFields = [
-  "tags",
   "name",
   "brand",
+  "photo",
   "price",
   "discount",
   "quantity",
-  "number_of_review",
-  "short_description",
+  "description",
 ];
 
 const productNumericFields = [

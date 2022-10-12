@@ -20,54 +20,48 @@ const reviewSchema = mongoose.Schema(
 reviewSchema.index({ productID: 1, userID: 1 }, { unique: true });
 
 reviewSchema.pre(/^find/, function (next) {
-  // this.populate({
-  //   path: 'tour',
-  //   select: 'name'
-  // }).populate({
-  //   path: 'user',
-  //   select: 'name photo'
-  // });
-
   this.populate({
     path: "userID",
-    select: "username ",
+    select: "username",
   });
   next();
 });
 
-// reviewSchema.statics.calcAverageRatings = async function (productID) {
-//   const stats = await this.aggregate([
-//     {
-//       $match: { productID: productID },
-//     },
-//     {
-//       group: {
-//         _id: "productID",
-//         nRating: { $sum: 1 },
-//         avgRating: { $avg: "rating" },
-//       },
-//     },
-//   ]);
+reviewSchema.statics.calcAverageRatings = async function (productID) {
+  const stats = await this.aggregate([
+    {
+      $match: { productID: productID },
+    },
+    {
+      $group: {
+        _id: "$productID",
+        nRating: { $sum: 1 },
+        avgRating: { $avg: "$rating" },
+      },
+    },
+  ]);
 
-//   console.log(stats);
-// };
+  if (stats.length > 0) {
+    await Product.findByIdAndUpdate(productID, {
+      number_of_review: stats[0].nRating,
+      avg_rating: stats[0].avgRating,
+    });
+  }
+};
+reviewSchema.post("save", function () {
+  this.constructor.calcAverageRatings(this.productID);
+});
 
-// reviewSchema.post("save", function () {
-//   this.constructor.calcAverageRatings(this.productID);
-// });
+reviewSchema.pre(/^findOneAnd/, async function (next) {
+  this.r = await this.findOne();
+  // console.log(this.r);
+  next();
+});
 
-// findByIdAndUpdate
-// findByIdAndDelete
-// reviewSchema.pre(/^findOneAnd/, async function (next) {
-//   this.r = await this.findOne();
-//   // console.log(this.r);
-//   next();
-// });
-
-// reviewSchema.post(/^findOneAnd/, async function () {
-//   // await this.findOne(); does NOT work here, query has already executed
-//   await this.r.constructor.calcAverageRatings(this.r.productID);
-// });
+reviewSchema.post(/^findOneAnd/, async function () {
+  // await this.findOne(); does NOT work here, query has already executed
+  await this.r.constructor.calcAverageRatings(this.r.productID);
+});
 
 const joiReviewSchema = Joi.object({
   rating: Joi.number().min(0).max(5).required(),
